@@ -1,46 +1,108 @@
-# Smart AI Resume Builder Platform
+# 🚀 Smart ATS Resume Builder Platform
 
-An advanced, full-stack AI platform designed to help job seekers optimize their resumes using Natural Language Processing (NLP).
+![Project Status](https://img.shields.io/badge/Status-Production--Ready-success?style=for-the-badge)
+![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_FastAPI_%7C_SpaCy-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-## 🚀 Features
-
-- **Multi-Page Dashboard**: Track your resume history and ATS performance.
-- **ATS Score Analyzer**: Detailed compatibility scoring using TF-IDF and Cosine Similarity.
-- **Skill Gap Analyzer**: Identifies missing technical skills and recommends learning resources.
-- **Interactive Resume Builder**: Create professional resumes with real-time PDF-style preview.
-- **Semantic Mapping**: Visualizes keyword importance using SpaCy word vectors.
-- **Secure Auth**: JWT-based authentication for private resume storage.
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **React 19** + **Vite**
-- **Tailwind CSS v4** (Modern UI/UX)
-- **Framer Motion** (Animations)
-- **React Router** (Navigation)
-
-### Backend
-- **FastAPI** (Python)
-- **SpaCy** (NLP Engine)
-- **SQLModel** (Database ORM)
-- **Scikit-learn** (Similarity Logic)
-
-## 📦 Installation
-
-### Backend Setup
-1. `cd backend`
-2. `python3 -m venv venv`
-3. `source venv/bin/activate`
-4. `pip install -r requirements.txt`
-5. `python3 main.py`
-
-### Frontend Setup
-1. `cd frontend`
-2. `npm install`
-3. `npm run dev`
-
-## 📊 Architecture
-The project follows a modular service-oriented architecture. The NLP pipeline extracts keywords, calculates vector similarity, and generates actionable feedback based on industry-standard ATS filtering logic.
+**Elevate your job search with the power of AI.** This platform doesn't just parse resumes—it intelligently optimizes them for modern Applicant Tracking Systems (ATS) using advanced Natural Language Processing.
 
 ---
-© 2025 Smart Resume Builder | Built with AI
+
+## 🌟 Core Features
+
+### 📋 **Interactive Resume Builder**
+- **Real-time Preview:** See your PDF-style resume evolve as you type.
+- **ATS-Friendly Templates:** Structured to ensure 100% parseability by HR software.
+- **Modular Sections:** Easily manage education, experience, and skills.
+
+### 🔍 **ATS Score Analyzer**
+- **Cosine Similarity:** Mathematical validation of your resume against job descriptions.
+- **Semantic Matching:** Goes beyond keywords to understand context using SpaCy word vectors.
+- **Feedback Engine:** Actionable advice on how to improve your match score.
+
+### ⚡ **Skill Gap Analysis**
+- **Smart Identification:** Automatically detects missing technical and soft skills.
+- **Learning Roadmap:** Direct links to learning resources (Coursera/Udemy) to bridge identifying gaps.
+
+### 🗺️ **Keyword Heatmap**
+- **Visual Intelligence:** A heatmap-inspired UI showing which of your skills are high-impact vs. weak for a specific role.
+
+### 📊 **Performance Dashboard**
+- **History Tracking:** Save multiple resumes and track your score improvement over time.
+- **Role Analytics:** Compare your fit across different job titles.
+
+---
+
+## 🛠️ Tech Stack & Architecture
+
+### **Frontend**
+- **React 19** + **Vite** (Ultra-fast build tool)
+- **Tailwind CSS v4** (Premium dark-themed UI components)
+- **Framer Motion** (Smooth, professional animations)
+- **Lucide React** (Consistent, high-quality iconography)
+
+### **Backend**
+- **FastAPI** (Python) - High performance, asynchronous API.
+- **SpaCy (en_core_web_sm)** - The industry standard for Industrial-strength NLP.
+- **SQLModel** - Modern SQLAlchemy-based ORM for SQLite.
+- **Scikit-learn** - TF-IDF Vectorization and similarity algorithms.
+
+---
+
+## 📦 Getting Started
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/Daaksh05/smart-ats-resume-builder.git
+cd smart-ats-resume-builder
+```
+
+### 2️⃣ Backend Setup
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python3 main.py
+```
+
+### 3️⃣ Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+## 🧠 The NLP Pipeline
+
+Our custom analysis engine follows a four-stage process:
+1. **Extraction:** PDF/Docx parsing into raw text.
+2. **Preprocessing:** Lemma-based normalization and stop-word removal.
+3. **Vectorization:** TF-IDF calculation for technical importance.
+4. **Scoring:** Weighted aggregation of Cosine Similarity and Semantic Overlap.
+
+---
+
+## 📂 Project Structure
+
+```text
+├── backend/
+│   ├── nlp/           # Logic for keywords & similarity
+│   ├── services/      # Business logic (ATS, Skill Gap)
+│   ├── auth/          # JWT & User identity
+│   └── database.py    # Persistent storage engine
+└── frontend/
+    ├── src/pages/     # Feature-specific platform pages
+    ├── src/components/# Reusable UI components
+    └── src/layout/    # Global wrap & navigation
+```
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! Whether it's a bug fix, new feature, or documentation improvement, please feel free to fork and open a PR.
+
+---
+© 2025 Smart Resume Builder | Built with ❤️ for Developers
