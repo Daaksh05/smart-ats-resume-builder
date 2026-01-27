@@ -1,5 +1,7 @@
 # 🚀 Smart ATS Resume Builder Platform
 
+![Project Banner](assets/banner.png)
+
 ![Project Status](https://img.shields.io/badge/Status-Production--Ready-success?style=for-the-badge)
 ![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_FastAPI_%7C_SpaCy-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
