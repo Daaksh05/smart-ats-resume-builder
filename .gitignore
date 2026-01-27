@@ -1,0 +1,19 @@
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/resume_builder.db
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.next/
+frontend/.env
+frontend/.env.local
+
+# System/IDE
+.DS_Store
+.vscode/
+.idea/
+*.log
