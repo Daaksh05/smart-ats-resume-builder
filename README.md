@@ -2,6 +2,9 @@
 
 ![Project Banner](assets/banner.png)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18405173.svg)](https://doi.org/10.5281/zenodo.18405173)
+
+
 ![Project Status](https://img.shields.io/badge/Status-Production--Ready-success?style=for-the-badge)
 ![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_FastAPI_%7C_SpaCy-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
@@ -101,6 +104,22 @@ Our custom analysis engine follows a four-stage process:
     └── src/layout/    # Global wrap & navigation
 ```
 
+---
+## 📖 Citation
+
+If you use this software in academic or professional work, please cite it as:
+@software{daakshayani2026smartats,
+  author  = {Daakshayani, N. S.},
+  title   = {Smart ATS Resume Builder},
+  year    = {2026},
+  version = {1.0.0},
+  doi     = {10.5281/zenodo.18405173},
+  url     = {https://github.com/Daaksh05/smart-ats-resume-builder}
+}
+
+---
+Daakshayani, N. S. (2026). Smart ATS Resume Builder (Version 1.0.0) [Computer software]. 
+https://doi.org/10.5281/zenodo.18405173
 ---
 
 ## 🤝 Contributing
