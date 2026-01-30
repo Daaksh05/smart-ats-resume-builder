@@ -1,8 +1,17 @@
 from sqlmodel import create_engine, SQLModel, Session
 import os
+from dotenv import load_dotenv
 
-sqlite_url = "sqlite:///./resume_builder.db"
-engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})
+# Load environment variables from .env file
+load_dotenv()
+
+# Get Database URL from environment or fallback to local SQLite
+sqlite_url = os.getenv("DATABASE_URL", "sqlite:///./resume_builder.db")
+
+# For SQLite, we need to disable same-thread check
+connect_args = {"check_same_thread": False} if sqlite_url.startswith("sqlite") else {}
+
+engine = create_engine(sqlite_url, connect_args=connect_args)
 
 def init_db():
     SQLModel.metadata.create_all(engine)
