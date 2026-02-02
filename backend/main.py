@@ -39,23 +39,33 @@ def health():
 
 @app.post("/api/ats/analyze")
 async def analyze(
-    file: UploadFile = File(...),
-    job_description: str = Form(...)
+    file: UploadFile = File(None),
+    job_description: str = Form(...),
+    manual_resume_text: str = Form(None)
 ):
     try:
-        print(f"Starting analysis for file: {file.filename}")
-        content = await file.read()
-        print(f"File size: {len(content)} bytes")
+        resume_text = ""
         
-        resume_text = extract_text(content, file.filename)
-        print(f"Extracted text length: {len(resume_text)} chars")
-        print(f"First 200 chars: {resume_text[:200] if resume_text else 'EMPTY'}")
+        if manual_resume_text:
+            print("Using manual text input for analysis")
+            resume_text = manual_resume_text
+        elif file:
+            print(f"Starting analysis for file: {file.filename}")
+            content = await file.read()
+            resume_text = extract_text(content, file.filename)
+        else:
+            raise HTTPException(status_code=400, detail="Please upload a file or paste your resume text.")
+
+        print(f"Extracted/Provided text length: {len(resume_text)} chars")
         
         if not resume_text or len(resume_text.strip()) < 10:
-            raise HTTPException(
-                status_code=400, 
-                detail="Could not extract text from the file. This PDF may be image-based (scanned). Please upload a text-based PDF or DOCX file."
-            )
+            if file and not manual_resume_text:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Could not extract text from the file. This PDF may be image-based (scanned). Please upload a text-based PDF or DOCX file, or paste your text manually."
+                )
+            else:
+                raise HTTPException(status_code=400, detail="Provided text is too short for analysis.")
         
         results = analyze_ats(resume_text, job_description)
         print(f"Analysis complete - Score: {results.get('overall_score', 0)}")

@@ -12,11 +12,21 @@ const ATSAnalyzer = () => {
     const [results, setResults] = useState<any>(null);
     const [error, setError] = useState("");
 
+    const [activeTab, setActiveTab] = useState<'upload' | 'paste'>('upload');
+    const [resumeText, setResumeText] = useState("");
+
     const handleAnalyze = async (useSample = false) => {
-        if (!useSample && !file) {
-            setError("Please upload a resume file.");
-            return;
+        if (!useSample) {
+            if (activeTab === 'upload' && !file) {
+                setError("Please upload a resume file.");
+                return;
+            }
+            if (activeTab === 'paste' && !resumeText.trim()) {
+                setError("Please paste your resume text.");
+                return;
+            }
         }
+
         if (!jd.trim()) {
             setError("Please provide a job description.");
             return;
@@ -33,7 +43,11 @@ const ATSAnalyzer = () => {
                 response = await axios.post('/api/ats/analyze-sample', formData);
             } else {
                 const formData = new FormData();
-                formData.append('file', file!);
+                if (activeTab === 'upload' && file) {
+                    formData.append('file', file);
+                } else if (activeTab === 'paste' && resumeText) {
+                    formData.append('manual_resume_text', resumeText);
+                }
                 formData.append('job_description', jd);
                 response = await axios.post('/api/ats/analyze', formData);
             }
@@ -56,36 +70,67 @@ const ATSAnalyzer = () => {
             <div className="grid lg:grid-cols-2 gap-8">
                 {/* Input Section */}
                 <div className="space-y-6">
-                    <div className="flex flex-col gap-4">
-                        <div
-                            className={`glass p-10 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/50'}`}
-                            onClick={() => document.getElementById('resume-upload')?.click()}
+                    {/* Tab Switcher */}
+                    <div className="glass rounded-3xl overflow-hidden p-1 flex bg-slate-900/50 border border-white/10">
+                        <button
+                            onClick={() => setActiveTab('upload')}
+                            className={`flex-1 py-3 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'upload' ? 'bg-blue-600 shadow-lg text-white' : 'text-slate-400 hover:text-white'}`}
                         >
-                            <input
-                                id="resume-upload"
-                                type="file"
-                                className="hidden"
-                                accept=".pdf,.docx"
-                                onChange={(e) => {
-                                    if (e.target.files) {
-                                        setFile(e.target.files[0]);
-                                        setResults(null);
-                                    }
-                                }}
-                            />
-                            <div className={`p-4 rounded-2xl mb-4 ${file ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
-                                <Upload />
-                            </div>
-                            <p className="font-medium text-center">{file ? file.name : "Upload Resume (PDF/DOCX)"}</p>
-                            <p className="text-xs text-slate-500 mt-2 text-center">Max file size: 5MB • Scanned PDFs not supported yet</p>
-                        </div>
+                            <Upload size={16} />
+                            Upload File
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('paste')}
+                            className={`flex-1 py-3 rounded-2xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${activeTab === 'paste' ? 'bg-blue-600 shadow-lg text-white' : 'text-slate-400 hover:text-white'}`}
+                        >
+                            <FileText size={16} />
+                            Paste Text
+                        </button>
+                    </div>
 
-                        <div className="flex justify-center">
+                    <div className="flex flex-col gap-4">
+                        {activeTab === 'upload' ? (
+                            <div
+                                className={`glass p-10 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/50'}`}
+                                onClick={() => document.getElementById('resume-upload')?.click()}
+                            >
+                                <input
+                                    id="resume-upload"
+                                    type="file"
+                                    className="hidden"
+                                    accept=".pdf,.docx"
+                                    onChange={(e) => {
+                                        if (e.target.files) {
+                                            setFile(e.target.files[0]);
+                                            setResults(null);
+                                        }
+                                    }}
+                                />
+                                <div className={`p-4 rounded-2xl mb-4 ${file ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                                    <Upload />
+                                </div>
+                                <p className="font-medium text-center">{file ? file.name : "Upload Resume (PDF/DOCX)"}</p>
+                                <p className="text-xs text-slate-500 mt-2 text-center">Max 5MB • Scanned PDFs not supported</p>
+                            </div>
+                        ) : (
+                            <div className="glass p-6 rounded-3xl space-y-4 font-mono">
+                                <textarea
+                                    className="w-full h-48 bg-slate-900/50 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-blue-500 transition-all placeholder:text-slate-700"
+                                    placeholder="Paste your resume content here..."
+                                    value={resumeText}
+                                    onChange={(e) => setResumeText(e.target.value)}
+                                />
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center px-2">
+                            <span className="text-xs text-slate-500 font-medium">Quick Verification:</span>
                             <button
                                 onClick={() => handleAnalyze(true)}
-                                className="text-xs text-blue-400 hover:text-blue-300 transition-colors underline decoration-dotted underline-offset-4"
+                                className="text-xs text-blue-400 hover:text-white bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 transition-all flex items-center gap-1.5 font-bold"
                             >
-                                No resume? Try with our Sample Resume
+                                <Zap size={12} />
+                                Try Sample Resume
                             </button>
                         </div>
                     </div>
@@ -104,7 +149,7 @@ const ATSAnalyzer = () => {
                     </div>
 
                     {error && (
-                        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-sm flex flex-col gap-2">
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-sm flex flex-col gap-2 shadow-lg">
                             <div className="flex items-center gap-3 font-bold">
                                 <AlertCircle size={18} />
                                 Analysis Issue
@@ -112,7 +157,7 @@ const ATSAnalyzer = () => {
                             <p className="pl-7 opacity-90">{error}</p>
                             {error.includes("image-based") && (
                                 <div className="pl-7 mt-2 text-xs border-t border-red-500/10 pt-2 text-slate-400">
-                                    💡 Tip: Try converting your scanned PDF to a text-based format, or upload a .docx file for better results.
+                                    💡 Tip: Your PDF appears to be a scanned image. Switch to the <b>'Paste Text'</b> tab above to manually paste your content, or upload a .docx file.
                                 </div>
                             )}
                         </div>
@@ -124,7 +169,7 @@ const ATSAnalyzer = () => {
                         className={`w-full py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${loading ? 'bg-slate-800' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'}`}
                     >
                         {loading ? <RefreshCw className="animate-spin" /> : <Zap size={18} />}
-                        {loading ? "Processing..." : "Analyze Compatibility"}
+                        {loading ? "Processing NLP..." : "Analyze Compatibility"}
                     </button>
                 </div>
 
@@ -169,24 +214,24 @@ const ATSAnalyzer = () => {
                                 className="space-y-6"
                             >
                                 {/* Score Widget */}
-                                <div className="glass p-8 rounded-3xl bg-gradient-to-br from-slate-900 to-blue-900/20 text-center">
-                                    <div className="text-6xl font-black mb-2">{results.overall_score}%</div>
+                                <div className="glass p-8 rounded-3xl bg-gradient-to-br from-slate-900 to-blue-900/20 text-center shadow-2xl border border-blue-500/20">
+                                    <div className="text-6xl font-black mb-2 text-white">{results.overall_score}%</div>
                                     <div className="text-sm font-bold text-blue-400 tracking-widest uppercase">ATS Match Score</div>
                                     <p className="mt-4 text-slate-300 italic">"{results.feedback}"</p>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="glass p-5 rounded-2xl">
-                                        <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Semantic</div>
-                                        <div className="text-2xl font-bold">{results.detail_scores.semantic_match}%</div>
+                                    <div className="glass p-5 rounded-2xl bg-slate-900/40">
+                                        <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Semantic Match</div>
+                                        <div className="text-2xl font-bold text-white">{results.detail_scores.semantic_match}%</div>
                                     </div>
-                                    <div className="glass p-5 rounded-2xl">
-                                        <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Keyword</div>
-                                        <div className="text-2xl font-bold">{results.detail_scores.keyword_overlap}%</div>
+                                    <div className="glass p-5 rounded-2xl bg-slate-900/40">
+                                        <div className="text-xs text-slate-500 uppercase tracking-wider mb-2">Keyword Overlap</div>
+                                        <div className="text-2xl font-bold text-white">{results.detail_scores.keyword_overlap}%</div>
                                     </div>
                                 </div>
 
-                                <div className="glass p-8 rounded-3xl space-y-6">
+                                <div className="glass p-8 rounded-3xl space-y-6 bg-slate-900/20">
                                     <div>
                                         <h4 className="font-bold flex items-center gap-2 mb-4 text-emerald-400">
                                             <CheckCircle size={18} />
