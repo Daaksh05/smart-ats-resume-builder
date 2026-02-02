@@ -51,10 +51,10 @@ async def analyze(
         print(f"Extracted text length: {len(resume_text)} chars")
         print(f"First 200 chars: {resume_text[:200] if resume_text else 'EMPTY'}")
         
-        if not resume_text or len(resume_text.strip()) < 50:
+        if not resume_text or len(resume_text.strip()) < 10:
             raise HTTPException(
                 status_code=400, 
-                detail="Could not extract sufficient text from the file. Please ensure the PDF/DOCX contains readable text."
+                detail="Could not extract text from the file. This PDF may be image-based (scanned). Please upload a text-based PDF or DOCX file."
             )
         
         results = analyze_ats(resume_text, job_description)
