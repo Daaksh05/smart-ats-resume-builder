@@ -79,6 +79,31 @@ async def skill_gap(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/ats/analyze-sample")
+async def analyze_sample(
+    job_description: str = Form(...)
+):
+    try:
+        sample_path = os.path.join(os.path.dirname(__file__), "sample_resume.docx")
+        if not os.path.exists(sample_path):
+             # Try parent dir if not found (vercel structure)
+             sample_path = os.path.join(os.path.dirname(__file__), "..", "backend", "sample_resume.docx")
+             
+        if not os.path.exists(sample_path):
+            raise HTTPException(status_code=404, detail="Sample resume file not found on server.")
+
+        with open(sample_path, "rb") as f:
+            content = f.read()
+            
+        resume_text = extract_text(content, "sample_resume.docx")
+        results = analyze_ats(resume_text, job_description)
+        # Add a flag to indicate this was a sample
+        results["is_sample"] = True
+        return results
+    except Exception as e:
+        print(f"Error during sample analysis: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

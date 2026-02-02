@@ -12,24 +12,35 @@ const ATSAnalyzer = () => {
     const [results, setResults] = useState<any>(null);
     const [error, setError] = useState("");
 
-    const handleAnalyze = async () => {
-        if (!file || !jd.trim()) {
-            setError("Please provide both a resume file and a job description.");
+    const handleAnalyze = async (useSample = false) => {
+        if (!useSample && !file) {
+            setError("Please upload a resume file.");
+            return;
+        }
+        if (!jd.trim()) {
+            setError("Please provide a job description.");
             return;
         }
 
         setLoading(true);
         setError("");
 
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('job_description', jd);
-
         try {
-            const response = await axios.post('/api/ats/analyze', formData);
+            let response;
+            if (useSample) {
+                const formData = new FormData();
+                formData.append('job_description', jd);
+                response = await axios.post('/api/ats/analyze-sample', formData);
+            } else {
+                const formData = new FormData();
+                formData.append('file', file!);
+                formData.append('job_description', jd);
+                response = await axios.post('/api/ats/analyze', formData);
+            }
             setResults(response.data);
         } catch (err: any) {
-            setError(err.response?.data?.detail || "Analysis failed. Please ensure the backend is running.");
+            const msg = err.response?.data?.detail || "Analysis failed. Please ensure the backend is running.";
+            setError(msg);
         } finally {
             setLoading(false);
         }
@@ -45,22 +56,38 @@ const ATSAnalyzer = () => {
             <div className="grid lg:grid-cols-2 gap-8">
                 {/* Input Section */}
                 <div className="space-y-6">
-                    <div
-                        className={`glass p-10 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/50'}`}
-                        onClick={() => document.getElementById('resume-upload')?.click()}
-                    >
-                        <input
-                            id="resume-upload"
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.docx"
-                            onChange={(e) => e.target.files && setFile(e.target.files[0])}
-                        />
-                        <div className={`p-4 rounded-2xl mb-4 ${file ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
-                            <Upload />
+                    <div className="flex flex-col gap-4">
+                        <div
+                            className={`glass p-10 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-white/10 hover:border-blue-500/50'}`}
+                            onClick={() => document.getElementById('resume-upload')?.click()}
+                        >
+                            <input
+                                id="resume-upload"
+                                type="file"
+                                className="hidden"
+                                accept=".pdf,.docx"
+                                onChange={(e) => {
+                                    if (e.target.files) {
+                                        setFile(e.target.files[0]);
+                                        setResults(null);
+                                    }
+                                }}
+                            />
+                            <div className={`p-4 rounded-2xl mb-4 ${file ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                                <Upload />
+                            </div>
+                            <p className="font-medium text-center">{file ? file.name : "Upload Resume (PDF/DOCX)"}</p>
+                            <p className="text-xs text-slate-500 mt-2 text-center">Max file size: 5MB • Scanned PDFs not supported yet</p>
                         </div>
-                        <p className="font-medium">{file ? file.name : "Upload Resume (PDF/DOCX)"}</p>
-                        <p className="text-xs text-slate-500 mt-2">Max file size: 5MB</p>
+
+                        <div className="flex justify-center">
+                            <button
+                                onClick={() => handleAnalyze(true)}
+                                className="text-xs text-blue-400 hover:text-blue-300 transition-colors underline decoration-dotted underline-offset-4"
+                            >
+                                No resume? Try with our Sample Resume
+                            </button>
+                        </div>
                     </div>
 
                     <div className="glass p-6 rounded-3xl space-y-4">
@@ -76,14 +103,24 @@ const ATSAnalyzer = () => {
                         />
                     </div>
 
-                    {error && <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-sm flex items-center gap-3">
-                        <AlertCircle size={18} />
-                        {error}
-                    </div>}
+                    {error && (
+                        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-sm flex flex-col gap-2">
+                            <div className="flex items-center gap-3 font-bold">
+                                <AlertCircle size={18} />
+                                Analysis Issue
+                            </div>
+                            <p className="pl-7 opacity-90">{error}</p>
+                            {error.includes("image-based") && (
+                                <div className="pl-7 mt-2 text-xs border-t border-red-500/10 pt-2 text-slate-400">
+                                    💡 Tip: Try converting your scanned PDF to a text-based format, or upload a .docx file for better results.
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <button
                         disabled={loading}
-                        onClick={handleAnalyze}
+                        onClick={() => handleAnalyze(false)}
                         className={`w-full py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${loading ? 'bg-slate-800' : 'bg-blue-600 hover:bg-blue-500 active:scale-[0.98]'}`}
                     >
                         {loading ? <RefreshCw className="animate-spin" /> : <Zap size={18} />}
