@@ -1,4 +1,3 @@
-from pdfminer.high_level import extract_text as pdfminer_extract
 import pypdf
 import docx
 import io
@@ -34,11 +33,14 @@ def extract_text_from_pdf(file_content: bytes) -> str:
 
     # 2. Try pdfminer.six (robust fallback)
     try:
+        from pdfminer.high_level import extract_text as pdfminer_extract
         print("Falling back to pdfminer.six for robust extraction...")
         full_text = pdfminer_extract(io.BytesIO(file_content))
         if full_text and full_text.strip():
             print(f"pdfminer.six extracted {len(full_text)} chars")
             return full_text.strip()
+    except ImportError:
+        print("pdfminer.six not installed, skipping robust extraction")
     except Exception as e:
         print(f"pdfminer.six error: {str(e)}")
         
