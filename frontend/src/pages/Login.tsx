@@ -20,7 +20,7 @@ const Login = () => {
             formData.append('username', email); // FastAPI OAuth2 expects 'username'
             formData.append('password', password);
 
-            const response = await axios.post('http://localhost:8000/auth/login', formData);
+            const response = await axios.post('/auth/login', formData);
             localStorage.setItem('token', response.data.access_token);
             navigate('/dashboard');
         } catch (err: any) {

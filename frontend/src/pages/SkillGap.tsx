@@ -15,7 +15,7 @@ const SkillGap = () => {
         formData.append('job_description', jd);
 
         try {
-            const resp = await axios.post("http://localhost:8000/api/ats/skill-gap", formData);
+            const resp = await axios.post("/api/ats/skill-gap", formData);
             setResults(resp.data);
         } catch (err) {
             console.error(err);

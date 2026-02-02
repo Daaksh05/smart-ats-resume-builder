@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Upload, FileText, CheckCircle, AlertCircle, RefreshCw, BarChart2, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE = "http://localhost:8000";
+
 
 const ATSAnalyzer = () => {
     const [file, setFile] = useState<File | null>(null);
@@ -26,7 +26,7 @@ const ATSAnalyzer = () => {
         formData.append('job_description', jd);
 
         try {
-            const response = await axios.post(`${API_BASE}/api/ats/analyze`, formData);
+            const response = await axios.post('/api/ats/analyze', formData);
             setResults(response.data);
         } catch (err: any) {
             setError(err.response?.data?.detail || "Analysis failed. Please ensure the backend is running.");
