@@ -33,15 +33,22 @@ app.include_router(auth_router)
 def home():
     return {"message": "Welcome to the Smart Resume Builder Platform API"}
 
+@app.get("/api/health")
+def health():
+    return {"status": "healthy", "database": "connected" if os.getenv("DATABASE_URL") else "sqlite"}
+
 @app.post("/api/ats/analyze")
 async def analyze(
     file: UploadFile = File(...),
     job_description: str = Form(...)
 ):
     try:
+        print(f"Starting analysis for file: {file.filename}")
         content = await file.read()
         resume_text = extract_text(content, file.filename)
+        print(f"Extracted text length: {len(resume_text)}")
         results = analyze_ats(resume_text, job_description)
+        print("Analysis complete")
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
