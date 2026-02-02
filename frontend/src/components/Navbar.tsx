@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, BarChart2, Zap, Target, LayoutDashboard } from 'lucide-react';
+import { Home, FileText, BarChart2, Zap, LayoutDashboard } from 'lucide-react';
 
 const Navbar = () => {
     const location = useLocation();
