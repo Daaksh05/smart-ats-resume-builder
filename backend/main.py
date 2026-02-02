@@ -45,12 +45,25 @@ async def analyze(
     try:
         print(f"Starting analysis for file: {file.filename}")
         content = await file.read()
+        print(f"File size: {len(content)} bytes")
+        
         resume_text = extract_text(content, file.filename)
-        print(f"Extracted text length: {len(resume_text)}")
+        print(f"Extracted text length: {len(resume_text)} chars")
+        print(f"First 200 chars: {resume_text[:200] if resume_text else 'EMPTY'}")
+        
+        if not resume_text or len(resume_text.strip()) < 50:
+            raise HTTPException(
+                status_code=400, 
+                detail="Could not extract sufficient text from the file. Please ensure the PDF/DOCX contains readable text."
+            )
+        
         results = analyze_ats(resume_text, job_description)
-        print("Analysis complete")
+        print(f"Analysis complete - Score: {results.get('overall_score', 0)}")
         return results
+    except HTTPException:
+        raise
     except Exception as e:
+        print(f"Error during analysis: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/ats/skill-gap")
