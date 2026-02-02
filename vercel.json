@@ -1,11 +1,24 @@
 {
+    "builds": [
+        {
+            "src": "api/index.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
+        }
+    ],
     "rewrites": [
         {
-            "source": "/api/:match*",
+            "source": "/api/:path*",
             "destination": "/api/index.py"
         },
         {
-            "source": "/auth/:match*",
+            "source": "/auth/:path*",
             "destination": "/api/index.py"
         },
         {
