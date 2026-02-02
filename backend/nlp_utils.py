@@ -4,13 +4,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 
 # Load small English model
-try:
     nlp = spacy.load("en_core_web_sm")
-except:
-    # Fallback if download hasn't finished (shouldn't happen with proper setup)
-    import os
-    os.system("python3 -m spacy download en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    print("Downloading 'en_core_web_sm' model...")
+    try:
+        from spacy.cli import download
+        download("en_core_web_sm")
+        nlp = spacy.load("en_core_web_sm")
+    except Exception as e:
+        print(f"Failed to download model: {e}")
+        nlp = spacy.blank("en")
 
 def clean_text(text: str) -> str:
     text = text.lower()
