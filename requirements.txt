@@ -23,7 +23,7 @@ joblib==1.5.3
 lxml==6.0.2
 MarkupSafe==3.0.3
 murmurhash==1.0.15
-numpy==2.0.2
+numpy<2.0.0
 packaging==26.0
 passlib==1.7.4
 preshed==3.0.12
