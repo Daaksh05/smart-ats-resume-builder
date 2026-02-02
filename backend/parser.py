@@ -1,3 +1,4 @@
+from pdfminer.high_level import extract_text as pdfminer_extract
 import pypdf
 import docx
 import io
@@ -5,40 +6,44 @@ import io
 def extract_text_from_pdf(file_content: bytes) -> str:
     """
     Extract text from PDF with multiple fallback strategies.
+    Try pypdf first (efficient), then pdfminer.six (robust).
     """
+    # 1. Try pypdf (standard)
     try:
         pdf_reader = pypdf.PdfReader(io.BytesIO(file_content))
         text_parts = []
         
         for page_num, page in enumerate(pdf_reader.pages):
             try:
-                # Try standard text extraction
                 page_text = page.extract_text()
-                
                 if page_text and isinstance(page_text, str):
-                    # Clean the text
                     cleaned = page_text.strip()
                     if cleaned:
                         text_parts.append(cleaned)
-                        print(f"Page {page_num + 1}: Extracted {len(cleaned)} chars")
             except Exception as e:
-                print(f"Warning: Failed to extract text from page {page_num + 1}: {e}")
+                print(f"pypdf warning: {e}")
                 continue
         
-        full_text = "\n\n".join(text_parts)
-        print(f"Total extracted text: {len(full_text)} chars from {len(pdf_reader.pages)} pages")
-        
-        # If we got some text, return it
-        if full_text.strip():
+        full_text = "\n\n".join(text_parts).strip()
+        if full_text:
+            print(f"pypdf extracted {len(full_text)} chars")
             return full_text
             
-        # If no text found, the PDF might be image-based
-        print("No text extracted - PDF may be scanned/image-based")
-        return ""
-        
     except Exception as e:
-        print(f"PDF parsing error: {str(e)}")
-        raise ValueError(f"Failed to parse PDF: {str(e)}")
+        print(f"pypdf error: {str(e)}")
+
+    # 2. Try pdfminer.six (robust fallback)
+    try:
+        print("Falling back to pdfminer.six for robust extraction...")
+        full_text = pdfminer_extract(io.BytesIO(file_content))
+        if full_text and full_text.strip():
+            print(f"pdfminer.six extracted {len(full_text)} chars")
+            return full_text.strip()
+    except Exception as e:
+        print(f"pdfminer.six error: {str(e)}")
+        
+    print("No text extracted from PDF - likely image-based")
+    return ""
 
 def extract_text_from_docx(file_content: bytes) -> str:
     try:
