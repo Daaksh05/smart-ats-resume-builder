@@ -6,12 +6,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get Database URL from environment or fallback to local SQLite
-sqlite_url = os.getenv("DATABASE_URL", "sqlite:///./resume_builder.db")
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    if os.getenv("VERCEL"):
+        DATABASE_URL = "sqlite:////tmp/resume_builder.db"
+    else:
+        DATABASE_URL = "sqlite:///./resume_builder.db"
 
 # For SQLite, we need to disable same-thread check
-connect_args = {"check_same_thread": False} if sqlite_url.startswith("sqlite") else {}
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
-engine = create_engine(sqlite_url, connect_args=connect_args)
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 
 def init_db():
     SQLModel.metadata.create_all(engine)
