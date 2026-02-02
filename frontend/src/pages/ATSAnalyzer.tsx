@@ -55,6 +55,11 @@ const ATSAnalyzer = () => {
         } catch (err: any) {
             const msg = err.response?.data?.detail || "Analysis failed. Please ensure the backend is running.";
             setError(msg);
+
+            // Auto-switch to paste tab if scanned PDF detected
+            if (msg.includes("image-based")) {
+                setActiveTab('paste');
+            }
         } finally {
             setLoading(false);
         }
@@ -156,8 +161,17 @@ const ATSAnalyzer = () => {
                             </div>
                             <p className="pl-7 opacity-90">{error}</p>
                             {error.includes("image-based") && (
-                                <div className="pl-7 mt-2 text-xs border-t border-red-500/10 pt-2 text-slate-400">
-                                    💡 Tip: Your PDF appears to be a scanned image. Switch to the <b>'Paste Text'</b> tab above to manually paste your content, or upload a .docx file.
+                                <div className="pl-7 mt-2 text-xs border-t border-red-500/10 pt-3 text-slate-400 space-y-3">
+                                    <p>💡 Tip: Your PDF appears to be a scanned image. Switch to the <b>'Paste Text'</b> tab above to manually paste your content, or upload a .docx file.</p>
+                                    <button
+                                        onClick={() => {
+                                            setActiveTab('paste');
+                                            setError("");
+                                        }}
+                                        className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 px-4 py-2 rounded-xl border border-blue-500/30 transition-all font-bold"
+                                    >
+                                        Switch to Paste Text Mode
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -186,6 +200,12 @@ const ATSAnalyzer = () => {
                                     <BarChart2 size={40} />
                                 </div>
                                 <p>Upload your documents to see the analysis results here.</p>
+                                <button
+                                    onClick={() => handleAnalyze(true)}
+                                    className="px-6 py-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 rounded-full border border-blue-500/30 transition-all font-bold text-sm"
+                                >
+                                    Don't have a resume? Use our Sample
+                                </button>
                             </motion.div>
                         )}
 
