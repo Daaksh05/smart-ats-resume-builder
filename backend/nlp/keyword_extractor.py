@@ -1,34 +1,37 @@
-import spacy
 import re
 
-# Load SpaCy model
-try:
-    nlp = spacy.load("en_core_web_sm")
-except ImportError:
-    import os
-    os.system("python -m spacy download en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+# Minimal set of English stopwords for lightweight keyword extraction
+STOPWORDS = {
+    'a', 'an', 'the', 'and', 'or', 'but', 'if', 'then', 'else', 'when', 'at', 'from', 'by', 'for', 'with', 'about', 'against', 
+    'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'up', 'down', 'in', 'out', 'on', 'off', 
+    'over', 'under', 'again', 'further', 'once', 'here', 'there', 'who', 'whom', 'which', 'what', 'this', 'that', 'these', 
+    'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 
+    'doing', 'i', 'me', 'my', 'mine', 'we', 'us', 'our', 'ours', 'you', 'your', 'yours', 'he', 'him', 'his', 'she', 'her', 
+    'hers', 'it', 'its', 'they', 'them', 'their', 'theirs', 'can', 'could', 'shall', 'should', 'will', 'would', 'may', 'might', 
+    'must', 'of', 'not', 'in', 'is', 'it', 'to', 'for', 'with', 'on', 'at'
+}
 
 def extract_keywords(text):
     """
-    Extract meaningful keywords (skills, technologies, qualifications) from text.
+    Extract meaningful keywords using regex and stopwords (Lightweight replacement for SpaCy).
     """
-    doc = nlp(text.lower())
-    # Filter for Nouns, Proper Nouns, and Adjectives
-    keywords = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct and token.pos_ in ["NOUN", "PROPN", "ADJ"]]
-    # Basic cleaning
-    keywords = [re.sub(r'[^a-zA-Z0-9]', '', kw) for kw in keywords if len(kw) > 1]
+    if not text:
+        return []
+        
+    # Standardize to lowercase
+    text = text.lower()
+    
+    # Extract alphanumeric words longer than 2 characters
+    words = re.findall(r'\b[a-z]{3,}\b', text)
+    
+    # Filter out stopwords
+    keywords = [word for word in words if word not in STOPWORDS]
+    
+    # Return unique keywords
     return list(set(keywords))
 
 def get_entities(text):
     """
-    Extract organizations and locations as entities.
+    Stubs out entity extraction since it requires heavy models.
     """
-    doc = nlp(text)
-    entities = {}
-    for ent in doc.ents:
-        if ent.label_ in ["ORG", "GPE", "PRODUCT"]:
-            if ent.label_ not in entities:
-                entities[ent.label_] = []
-            entities[ent.label_].append(ent.text)
-    return entities
+    return {}
