@@ -9,7 +9,10 @@
 ![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_FastAPI_%7C_SpaCy-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
+### 🔗 **[Live Demo](https://smart-ats-resume-builder.vercel.app)**
+
 **Elevate your job search with the power of AI.** This platform doesn't just parse resumes—it intelligently optimizes them for modern Applicant Tracking Systems (ATS) using advanced Natural Language Processing.
+
 
 ---
 
